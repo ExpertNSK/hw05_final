@@ -28,6 +28,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ('pub_date', 'author')
     empty_value_display = '-пусто-'
 
+
 # При регистрации модели Post источником конфигурации для неё назначаем
 # класс PostAdmin
 admin.site.register(Post, PostAdmin)

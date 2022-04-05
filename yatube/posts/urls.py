@@ -10,7 +10,11 @@ urlpatterns = [
     path('posts/<post_id>/edit/', views.post_edit, name='post_edit'),
     path('posts/<post_id>/delete/', views.post_delete, name='post_delete'),
     path('posts/<post_id>/comment/', views.add_comment, name='add_comment'),
-    path('posts/<post_id>/<comment_id>/delete/', views.delete_comment, name='delete_comment'),
+    path(
+        'posts/<post_id>/<comment_id>/delete/',
+        views.delete_comment,
+        name='delete_comment'
+    ),
     path('posts/<post_id>/', views.post_detail, name='post_detail'),
     path('create/', views.post_create, name='post_create'),
     path('follow/', views.follow_index, name='follow'),

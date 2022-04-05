@@ -85,4 +85,4 @@ class Follow(CreatedModel):
             models.UniqueConstraint(
                 fields=['user', 'author'],
                 name='user_and_author_uniq_together'),
-            ]
+        ]
