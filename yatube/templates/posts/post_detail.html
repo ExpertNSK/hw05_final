@@ -78,12 +78,12 @@
                   </a>
                 </h5>
                   <p>
-                  {{ comments.text }}
+                    {{ comments.text }}
                   </p>
                   {% if comments.author == request.user %}
-                    <a class="button" style="margin-right: 0" href="{% url 'posts:delete_comment' post_id comments.id %}">
-                      Удалить
-                    </a>
+                  <a class="button" href="{% url 'posts:delete_comment' post_id comments.id %}">
+                    Удалить
+                  </a>
                   {% endif %}
                 </div>
               </div>
