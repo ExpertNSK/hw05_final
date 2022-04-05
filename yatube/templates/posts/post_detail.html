@@ -40,7 +40,7 @@
                   <form method="post" action="{% url 'posts:add_comment' post.id %}">
                     {% csrf_token %}      
                     <div class="form-group mb-2">
-                      {{ form.text|addclass:"form-control" }}
+                      {{ form.text|addclass:"form-control form-height"}}
                     </div>
                     <button type="submit" class="button" style="width: 100%">Отправить</button>
                   </form>
@@ -63,6 +63,11 @@
               Редактировать
             </a>
           </li>
+          <li class="list-group-item d-flex justify-content-center align-items-center">
+            <a class="btn btn-default" href="{% url 'posts:post_delete' post_id %}">
+              Удалить
+            </a>
+          </li>
           {% endif %}
           {% for comments in page_obj %}
             <div class="media mb-4">
@@ -75,6 +80,11 @@
                   <p>
                   {{ comments.text }}
                   </p>
+                  {% if comments.author == request.user %}
+                    <a class="button" style="margin-right: 0" href="{% url 'posts:delete_comment' post_id comments.id %}">
+                      Удалить
+                    </a>
+                  {% endif %}
                 </div>
               </div>
           {% endfor %}

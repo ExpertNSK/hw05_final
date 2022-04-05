@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
@@ -62,6 +63,12 @@ def post_detail(request, post_id):
     context.update(get_page_context(Comment.objects.filter(post=post).all(), request))
     return render(request, 'posts/post_detail.html', context)
 
+@login_required
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user == post.author:
+        post.delete()
+    return redirect('posts:profile', username=request.user.username)
 
 @login_required
 def post_create(request):
@@ -104,6 +111,12 @@ def add_comment(request, post_id):
         comment.save()
     return redirect('posts:post_detail', post_id)
 
+@login_required
+def delete_comment(request, post_id, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.user == comment.author:
+        comment.delete()
+    return redirect('posts:post_detail', post_id)
 
 @login_required
 def follow_index(request):
