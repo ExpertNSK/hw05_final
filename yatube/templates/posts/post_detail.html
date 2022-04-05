@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-{% load user_filters %}
 {% load thumbnail %}
-
 {% block title %}
     <title>Пост {{ post.text|truncatechars:30 }}</title>
 {% endblock %}
@@ -33,20 +31,7 @@
               </a>
             </li>
             <li class="list-group-item">
-              {% if user.is_authenticated %}
-              <div class="card my-4">
-                <h5 class="card-header">Добавить комментарий:</h5>
-                <div class="card-body">
-                  <form method="post" action="{% url 'posts:add_comment' post.id %}">
-                    {% csrf_token %}      
-                    <div class="form-group mb-2">
-                      {{ form.text|addclass:"form-control form-height"}}
-                    </div>
-                    <button type="submit" class="button" style="width: 100%">Отправить</button>
-                  </form>
-                </div>
-              </div>
-              {% endif %}
+              {% include 'posts/includes/add_comments.html' %}
             </li>
           </ul>
         </aside>
@@ -69,25 +54,7 @@
             </a>
           </li>
           {% endif %}
-          {% for comments in page_obj %}
-            <div class="media mb-4">
-              <div class="media-body">
-                <h5 class="mt-0">
-                  <a href="{% url 'posts:profile' comments.author %}">
-                    {{ comments.author.get_full_name }}
-                  </a>
-                </h5>
-                  <p>
-                    {{ comments.text }}
-                  </p>
-                  {% if comments.author == request.user %}
-                  <a class="button" href="{% url 'posts:delete_comment' post_id comments.id %}">
-                    Удалить
-                  </a>
-                  {% endif %}
-                </div>
-              </div>
-          {% endfor %}
+          {% include 'posts/includes/comments.html' %}
           {% include 'posts/includes/paginator.html' %} 
         </article>
       </div> 

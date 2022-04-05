@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -35,6 +36,7 @@ class PostURLTests(TestCase):
             f'/posts/{cls.post.pk}/edit/': 'posts/create_post.html',
             f'/posts/{cls.post.pk}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
+            '/follow/': 'posts/follow.html',
         }
         cls.list_url_for_all_users = {
             '/',

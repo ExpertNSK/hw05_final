@@ -149,3 +149,24 @@ class PostFormsTests(TestCase):
         self.assertEqual(Comment.objects.count(), comments_count + 1)
         self.assertEqual(comment_text, new_comment.text)
         self.assertEqual(comment_author, new_comment.author)
+
+    def test_guest_add_comment(self):
+        """Проверка переадресации при попытке
+        комментирования неавторизованным пользователем."""
+        response = self.guest_user.post(
+            reverse(
+                'posts:add_comment',
+                kwargs={'post_id': f'{self.post.id}'}
+            ),
+            data=self.comment_form_data,
+            follow=True,
+        )
+        self.assertRedirects(
+            response,
+            reverse('users:login')
+            + '?next='
+            + reverse(
+                'posts:add_comment',
+                kwargs={'post_id': f'{self.post.id}'}
+            )
+        )

@@ -1,7 +1,8 @@
-from core.models import CreatedModel
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+
+from core.models import CreatedModel
 
 User = get_user_model()
 
@@ -78,3 +79,10 @@ class Follow(CreatedModel):
         related_name='following',
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='user_and_author_uniq_together'),
+            ]

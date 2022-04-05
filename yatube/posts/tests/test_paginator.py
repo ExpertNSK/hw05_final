@@ -1,7 +1,9 @@
 from math import ceil
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from yatube.settings import ENTRIES_PER_PAGE
 
 from ..models import Post

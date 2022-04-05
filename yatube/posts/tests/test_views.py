@@ -209,12 +209,13 @@ class PostPagesTests(TestCase):
     def test_follow(self):
         """Проверяем, что авторизованный пользователь может
         подписаться на других пользователей"""
+        follow_start = Follow.objects.count()
         self.authorized_follower.get(reverse(
             'posts:profile_follow',
             kwargs={'username': self.post.author}))
         follow = Follow.objects.first()
         follow_count = Follow.objects.count()
-        self.assertEqual(follow_count, 1)
+        self.assertEqual(follow_count, follow_start + 1)
         self.assertEqual(follow.user, self.follower)
         self.assertEqual(follow.author, self.user)
 
@@ -222,8 +223,9 @@ class PostPagesTests(TestCase):
         """Проверяем, что авторизованный пользователь может
         отписаться от других пользователей"""
         Follow.objects.create(user=self.follower, author=self.user)
+        follow_start = Follow.objects.count()
         self.authorized_follower.get(reverse(
             'posts:profile_unfollow',
             kwargs={'username': self.user}))
         follow_counts = Follow.objects.count()
-        self.assertEqual(follow_counts, 0)
+        self.assertEqual(follow_counts, follow_start - 1)

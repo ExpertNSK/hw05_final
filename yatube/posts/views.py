@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
+
 from yatube.settings import ENTRIES_PER_PAGE
 
 from .forms import CommentForm, PostForm
@@ -60,7 +61,7 @@ def post_detail(request, post_id):
         'post_id': post_id,
         'form': form,
     }
-    context.update(get_page_context(Comment.objects.filter(post=post).all(), request))
+    context.update(get_page_context(post.comments.select_related('author'), request))
     return render(request, 'posts/post_detail.html', context)
 
 @login_required
@@ -94,7 +95,7 @@ def post_edit(request, post_id):
         instance=post
     )
     if form.is_valid():
-        post = form.save()
+        form.save()
         return redirect('posts:post_detail', post_id=post_id)
     return render(request, 'posts/create_post.html',
                   {'form': form, 'is_edit': True})
@@ -131,10 +132,8 @@ def follow_index(request):
 def profile_to_follow(request, username):
     following_user = get_object_or_404(User, username=username)
     user = request.user
-    check_follow = Follow.objects.filter(
-        user=user, author=following_user).exists()
-    if not check_follow and user != following_user:
-        Follow.objects.create(
+    if user != following_user:
+        Follow.objects.get_or_create(
             user=user,
             author=following_user
         )
@@ -146,7 +145,6 @@ def profile_unfollow(request, username):
     user = request.user
     author = get_object_or_404(User, username=username)
     check_follow = Follow.objects.filter(user=user, author=author)
-    if check_follow:
-        Follow.objects.filter(user=request.user, author=author).exists()
+    if check_follow.exists():
         check_follow.delete()
     return redirect('posts:profile', username=username)

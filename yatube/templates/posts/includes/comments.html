@@ -1,0 +1,19 @@
+{% for comments in page_obj %}
+<div class="media mb-4">
+  <div class="media-body">
+    <h5 class="mt-0">
+      <a href="{% url 'posts:profile' comments.author %}">
+        {{ comments.author.get_full_name }}
+      </a>
+    </h5>
+      <p>
+        {{ comments.text }}
+      </p>
+      {% if comments.author == request.user %}
+      <a class="button" href="{% url 'posts:delete_comment' post_id comments.id %}">
+        Удалить
+      </a>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
