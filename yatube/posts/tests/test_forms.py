@@ -26,10 +26,22 @@ class PostFormsTests(TestCase):
             b'\x00\x00\x01\x00\x01\x00\x00\x02'
             b'\x02\x4c\x01\x00\x3b'
         )
+        picture_2 = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00'
+            b'\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00'
+            b'\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
         cls.uploaded = SimpleUploadedFile(
             name='small.gif',
             content=picture,
             content_type='image/gif',
+        )
+        cls.uploaded_2 = SimpleUploadedFile(
+            name='small2.gif',
+            content=picture_2,
+            content_type='image/gif'
         )
         # создаем запись в БД
         cls.group = Group.objects.create(
@@ -63,20 +75,22 @@ class PostFormsTests(TestCase):
             'posts:profile',
             kwargs={'username': f'{self.post.author}'}
         ))
-        first_object = Post.objects.first()
+        self.assertEqual(Post.objects.count(), post_count + 1)
+        object = Post.objects.first()
         post_text = self.form_data.get('text')
         post_group = self.form_data.get('group')
         post_author = self.user
-        self.assertEqual(Post.objects.count(), post_count + 1)
-        self.assertEqual(first_object.text, post_text)
-        self.assertEqual(first_object.group.id, post_group)
-        self.assertEqual(first_object.author, post_author)
+        self.assertEqual(object.text, post_text)
+        self.assertEqual(object.group.id, post_group)
+        self.assertEqual(object.author, post_author)
+        self.assertTrue(object.image)
 
     def test_correct_edit_post(self):
         """Проверяем корректную работу редактирования поста."""
         new_form_data = {
             'text': 'Changed text',
-            'group': self.group.id
+            'group': self.group.id,
+            'image': self.uploaded_2
         }
         response = self.authorized_client.post(
             reverse('posts:post_edit', kwargs={'post_id': f'{self.post.pk}'}),
@@ -87,13 +101,14 @@ class PostFormsTests(TestCase):
             'posts:post_detail',
             kwargs={'post_id': f'{self.post.pk}'}
         ))
-        first_object = Post.objects.get(id=self.post.pk)
+        object = Post.objects.get(id=self.post.pk)
         post_text = new_form_data.get('text')
         post_group = new_form_data.get('group')
         post_author = self.user
-        self.assertEqual(first_object.text, post_text)
-        self.assertEqual(first_object.group.id, post_group)
-        self.assertEqual(first_object.author, post_author)
+        self.assertEqual(object.text, post_text)
+        self.assertEqual(object.group.id, post_group)
+        self.assertEqual(object.author, post_author)
+        self.assertTrue(object.image)
 
     def test_guest_client_create_post_redirect(self):
         """Неавторизованный пользователь, не может создать пост."""

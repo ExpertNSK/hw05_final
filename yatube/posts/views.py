@@ -52,15 +52,14 @@ def post_detail(request, post_id):
     # Здесь код запроса к модели и создание словаря контекста
     post = get_object_or_404(Post, pk=post_id)
     posts_count = post.author.posts.count()
-    comments = Comment.objects.filter(post=post).all()
     form = CommentForm()
     context = {
         'posts_count': posts_count,
         'post': post,
         'post_id': post_id,
-        'comments': comments,
         'form': form,
     }
+    context.update(get_page_context(Comment.objects.filter(post=post).all(), request))
     return render(request, 'posts/post_detail.html', context)
 
 
