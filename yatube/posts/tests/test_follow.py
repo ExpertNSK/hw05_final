@@ -23,19 +23,27 @@ class FollowPageTest(TestCase):
         cls.author = Client()
         cls.author.force_login(cls.user3)
 
-    def test_follow_page_show_relevant_posts(self):
-        """Новый пост появляется в ленте тех, кто подписан на автора."""
+    def _create_follow_obj_and_new_post(self):
         Follow.objects.create(user=self.user, author=self.user3)
         new_post = Post.objects.create(
             text='Text',
             author=self.user3,
         )
-        response_for_follower = self.follower.get(reverse('posts:follow'))
-        response_for_not_follower = self.not_follower.get(
+        return new_post
+
+    def test_follow_page_show_new_post(self):
+        """Новый пост появляется в ленте тех, кто подписан на автора."""
+        new_post = self._create_follow_obj_and_new_post()
+        response = self.follower.get(reverse('posts:follow'))
+        self.assertIn(new_post, response.context['page_obj'])
+
+    def test_not_follower(self):
+        """Новый пост не появляется в ленте тех, кто не подписан на автора."""
+        new_post = self._create_follow_obj_and_new_post()
+        response = self.not_follower.get(
             reverse('posts:follow')
         )
-        self.assertIn(new_post, response_for_follower.context['page_obj'])
         self.assertIsNot(
             new_post,
-            response_for_not_follower.context['page_obj']
+            response.context['page_obj']
         )

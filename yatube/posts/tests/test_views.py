@@ -107,7 +107,7 @@ class PostPagesTests(TestCase):
         """Шаблон group_list сформирован с правильным контекстом,
             на странице ожидаемое кол-во записей."""
         response = self.authorized_client.get(
-            reverse('posts:groups', kwargs={'slug': 'test_slug'})
+            reverse('posts:groups', kwargs={'slug': self.group.slug})
         )
         first_object = response.context['page_obj'][0]
         self._context_check(first_object)
@@ -184,7 +184,7 @@ class PostPagesTests(TestCase):
         ))
         response_another_group = self.authorized_client.get(reverse(
             'posts:groups',
-            kwargs={'slug': 'test_slug'}
+            kwargs={'slug': self.group.slug}
         ))
         self.assertIn(new_post, response_main_page.context['page_obj'])
         self.assertIn(new_post, response_group_list.context['page_obj'])

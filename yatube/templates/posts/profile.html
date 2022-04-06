@@ -4,21 +4,21 @@
 {% endblock %}
 {% block content %}       
     <h1>Все посты пользователя {{ profile.get_full_name }} 
-    {% if request.user != profile %}
-      {% if following %}
-    <a
-      href="{% url 'posts:profile_unfollow' profile.username %}"
-    >
-    <button class="button" style="font-size: 18px">Отписаться</button>
-    </a>
+      {% if request.user != profile %}
+        {% if following %}
+        <a
+          href="{% url 'posts:profile_unfollow' profile.username %}"
+        >
+          <button class="button" style="font-size: 18px">Отписаться</button>
+        </a>
       {% else %}
-      <a
-        href="{% url 'posts:profile_follow' profile.username %}" role="button"
-      >
-      <button class="button" style="font-size: 18px">Подписаться</button>
-      </a>
+        <a
+          href="{% url 'posts:profile_follow' profile.username %}" role="button"
+        >
+        <button class="button" style="font-size: 18px">Подписаться</button>
+        </a>
+        {% endif %}
       {% endif %}
-    {% endif %}
     </h1>
     <h3>Всего постов: {{ posts_count }} </h3>  
     {% include 'posts/includes/posts.html' %}
